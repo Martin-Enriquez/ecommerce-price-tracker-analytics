@@ -7,7 +7,7 @@ Python automation tool for e-commerce price monitoring. It extracts product pric
 
 ## Overview
 
-The tracker scrapes a product catalog, normalizes prices to US dollars, compares them against the previous run, and produces a analyst-ready `.xlsx` report. It is designed for sellers and analysts operating in USD-based markets such as the United States and Ecuador.
+The tracker scrapes a product catalog, normalizes prices to US dollars, compares them against the previous run, and produces an analyst-ready `.xlsx` report. It is designed for sellers and analysts operating in USD-based markets such as the United States and Ecuador.
 
 ## Features
 
