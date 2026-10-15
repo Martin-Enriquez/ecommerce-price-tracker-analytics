@@ -3,3 +3,8 @@
 ~$*
 *.xlsx
 historial_precios.csv
+__pycache__/
+   *.pyc
+   .venv/
+   venv/
+   .env
