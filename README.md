@@ -1,41 +1,95 @@
-# 🏷️ E-Commerce Price & Stock Tracker with Analytics Export
+# 🏷️ E-Commerce Price & Stock Tracker
 
-Herramienta en Python para monitorear precios de un catálogo e-commerce, guardar historial y generar reportes en Excel en **dólares estadounidenses (USD)**, pensada para operar en EE.UU. y Ecuador (ambos usan el dólar).
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-see%20LICENSE-lightgrey)
 
-## 🚀 Características
-- **Extracción de precios y stock** con paginación, timeout y manejo de errores.
-- **Conversión GBP → USD** con tipo de cambio configurable (`GBP_USD_RATE`).
-- **Historial de precios** (`historial_precios.csv`): cada corrida se guarda y se calcula la variación vs la anterior.
-- **Excel con formato `$`**, encabezados, filtros, paneles congelados y formato condicional (ahorros altos en verde, alzas de precio en rojo).
-- **Hoja "Resumen"** con fecha, fuente, tipo de cambio y promedios.
+Python automation tool for e-commerce price monitoring. It extracts product prices and stock status, converts them to USD, keeps a historical record of every run, and exports a formatted Excel report with conditional formatting.
 
-## ⚠️ Alcance y limitaciones
-- La fuente es [books.toscrape.com](http://books.toscrape.com), un sitio de práctica para scraping.
-- El **precio de lista es simulado** (markup 10%–20%, estable por producto) porque el sitio no publica precios de lista reales.
-- Los precios no incluyen impuestos (IVA / sales tax), aranceles ni envío.
+## Overview
 
-## 🛠️ Tech Stack
-Python 3.10+ · Requests · BeautifulSoup4 · Pandas · OpenPyXL
+The tracker scrapes a product catalog, normalizes prices to US dollars, compares them against the previous run, and produces a analyst-ready `.xlsx` report. It is designed for sellers and analysts operating in USD-based markets such as the United States and Ecuador.
 
-## 📦 Instalación y uso
+## Features
+
+- **Price & stock extraction:** Crawls catalog pages with pagination, request timeouts, and error handling.
+- **Currency conversion:** Converts source prices (GBP) to USD using a configurable exchange rate.
+- **Historical tracking:** Appends a timestamped snapshot to `historial_precios.csv` on every run and calculates price variation versus the previous run.
+- **Excel reporting:** Styled headers, explicit USD formatting (`$`), auto-fitted columns, frozen header row, auto-filters, and conditional formatting (green for high savings, red for price increases).
+- **Summary sheet:** A `Resumen` sheet with run date, data source, exchange rate, product count, and averages.
+
+## Quick Start
 
 ```bash
 git clone https://github.com/Martin-Enriquez/ecommerce-price-tracker-analytics.git
 cd ecommerce-price-tracker-analytics
 pip install -r requirements.txt
+python main.py
+```
 
-# Opcional: actualizar el tipo de cambio GBP -> USD
+To override the default exchange rate:
+
+```bash
+# macOS / Linux
 GBP_USD_RATE=1.34 python main.py
 ```
 
-En Windows (PowerShell):
-
 ```powershell
+# Windows (PowerShell)
 $env:GBP_USD_RATE="1.34"; python main.py
 ```
 
-## 📁 Salidas
-| Archivo | Contenido |
+## Configuration
+
+| Setting | Where | Default | Description |
+|---|---|---|---|
+| `GBP_USD_RATE` | Environment variable | `1.34` | GBP → USD exchange rate. Update it before each real run. |
+| `CATALOG_URL` | `main.py` | Travel category of books.toscrape.com | Catalog page to scrape. |
+| `HIGHLIGHT_DISCOUNT` | `main.py` | `0.13` | Savings at or above this fraction are highlighted in green. |
+| `SIM_MARKUP_RANGE` | `main.py` | `(0.10, 0.20)` | Range used to simulate the list price. |
+
+## Output
+
+**`reporte_monitor_precios.xlsx`**
+
+| Sheet | Contents |
 |---|---|
-| `reporte_monitor_precios.xlsx` | Reporte con hojas "Monitor de Precios" y "Resumen" |
-| `historial_precios.csv` | Snapshots de cada corrida (precio GBP, tipo de cambio, precio USD, stock) |
+| `Monitor de Precios` | Product, simulated list price ($), offer price ($), savings ($ and %), stock status, and variation vs. previous run (%). |
+| `Resumen` | Run date, source, currencies, exchange rate, product count, average offer price, and average savings. |
+
+**`historial_precios.csv`**
+
+One row per product per run: timestamp, product, price in GBP, exchange rate, price in USD, and stock status.
+
+## Project Structure
+
+```
+.
+├── main.py            # Scraping, analysis, history, and Excel export
+├── requirements.txt   # Python dependencies
+├── README.md
+└── LICENSE
+```
+
+## Scope & Limitations
+
+- The data source is [books.toscrape.com](http://books.toscrape.com), a sandbox site built for scraping practice.
+- **List prices are simulated** (10%–20% markup, stable per product) because the sandbox does not publish real list prices.
+- Prices exclude taxes (VAT/sales tax), import duties, and shipping.
+- The sandbox's prices never change, so the variation column will show 0% until a live source is used.
+
+## Roadmap
+
+- [ ] Add a second real source for competitor price comparison
+- [ ] Country-specific tax columns (Ecuador VAT, US state sales tax)
+- [ ] Scheduled runs (cron / Task Scheduler)
+- [ ] Price-drop alerts by email
+
+## Tech Stack
+
+Python 3.10+ · Requests · BeautifulSoup4 · Pandas · OpenPyXL
+
+## License
+
+See the [LICENSE](LICENSE) file for details.
+
+<img width="1193" height="208" alt="Captura de pantalla 2026-10-14 a la(s) 10 40 36 p  m" src="https://github.com/user-attachments/assets/be5f928f-cfb6-468c-811f-9a8e321bb5c5" />
