@@ -7,15 +7,15 @@ Python automation tool for e-commerce price monitoring. It extracts product pric
 
 ## Overview
 
-The tracker scrapes a product catalog, normalizes prices to US dollars, compares them against the previous run, and produces a analyst-ready `.xlsx` report. It is designed for sellers and analysts operating in USD-based markets such as the United States and Ecuador.
+The tracker scrapes a product catalog, normalizes prices to US dollars, compares them against the previous run, and produces an analyst-ready `.xlsx` report. It is designed for sellers and analysts operating in USD-based markets such as the United States and Ecuador.
 
 ## Features
 
 - **Price & stock extraction:** Crawls catalog pages with pagination, request timeouts, and error handling.
 - **Currency conversion:** Converts source prices (GBP) to USD using a configurable exchange rate.
-- **Historical tracking:** Appends a timestamped snapshot to `historial_precios.csv` on every run and calculates price variation versus the previous run.
+- **Historical tracking:** Appends a timestamped snapshot to `price_history.csv` on every run and calculates price variation versus the previous run.
 - **Excel reporting:** Styled headers, explicit USD formatting (`$`), auto-fitted columns, frozen header row, auto-filters, and conditional formatting (green for high savings, red for price increases).
-- **Summary sheet:** A `Resumen` sheet with run date, data source, exchange rate, product count, and averages.
+- **Summary sheet:** Key stats (average, lowest and highest price, savings, price changes) and a price-distribution chart.
 
 ## Quick Start
 
@@ -25,6 +25,8 @@ cd ecommerce-price-tracker-analytics
 pip install -r requirements.txt
 python main.py
 ```
+
+A full run of the whole catalog (50 pages) takes about a minute. To try it quickly, limit the pages: `MAX_PAGES=3 python main.py`.
 
 To override the default exchange rate:
 
@@ -43,20 +45,22 @@ $env:GBP_USD_RATE="1.34"; python main.py
 | Setting | Where | Default | Description |
 |---|---|---|---|
 | `GBP_USD_RATE` | Environment variable | `1.34` | GBP → USD exchange rate. Update it before each real run. |
-| `CATALOG_URL` | `main.py` | Travel category of books.toscrape.com | Catalog page to scrape. |
+| `CATALOG_URL` | Environment variable | Whole books.toscrape.com catalog (~1,000 products, 50 pages) | Catalog page to start from. Pagination is followed automatically. |
+| `MAX_PAGES` | Environment variable | all pages | Limit the number of pages crawled (e.g. `MAX_PAGES=5`). |
+| `REQUEST_DELAY` | `main.py` | `0.5` s | Pause between requests, to be polite to the site. |
 | `HIGHLIGHT_DISCOUNT` | `main.py` | `0.13` | Savings at or above this fraction are highlighted in green. |
 | `SIM_MARKUP_RANGE` | `main.py` | `(0.10, 0.20)` | Range used to simulate the list price. |
 
 ## Output
 
-**`reporte_monitor_precios.xlsx`**
+**`price_monitor_report.xlsx`**
 
 | Sheet | Contents |
 |---|---|
-| `Monitor de Precios` | Product, simulated list price ($), offer price ($), savings ($ and %), stock status, and variation vs. previous run (%). |
-| `Resumen` | Run date, source, currencies, exchange rate, product count, average offer price, and average savings. |
+| `Price Monitor` | Product, rating, simulated list price ($), offer price ($), savings ($ and %), stock status, variation vs. previous run (%), and a clickable product link. |
+| `Summary` | Run date, source, currencies, exchange rate, product count, price and savings statistics, count of price increases/drops, and a price-distribution chart. |
 
-**`historial_precios.csv`**
+**`price_history.csv`**
 
 One row per product per run: timestamp, product, price in GBP, exchange rate, price in USD, and stock status.
 
